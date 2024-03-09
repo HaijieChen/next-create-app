@@ -1,3 +1,4 @@
+'use client';
 import {
   BanknotesIcon,
   ClockIcon,
@@ -5,7 +6,8 @@ import {
   InboxIcon,
 } from '@heroicons/react/24/outline';
 import { lusitana } from '@/app/ui/fonts';
-import { fetchCardData } from '@/app/lib/data';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 const iconMap = {
   collected: BanknotesIcon,
@@ -14,21 +16,41 @@ const iconMap = {
   invoices: InboxIcon,
 };
 
-export default async function CardWrapper() {
-  const {numberOfCustomers,
-    numberOfInvoices,
-    totalPaidInvoices,
-    totalPendingInvoices} = await fetchCardData();
+export default  function CardWrapper() {
+  const [policeNumb,setPoliceNumb] =  useState(0);
+  const [suspectNumb,setSuspectNumb] = useState(0);
+  const [newSuspectNumb,setNewSuspectNumb] = useState(0);
+  const [todayPushAddressNumb,setTodayPushAddressNumb] = useState(0);
+  useEffect(()=>{
+    const options = {
+      methed: "GET",
+      url: "/api/police/statisticNumb",
+      headers: {
+        'Authorization': `Basic UDAwMToxMjM0NTY=`
+      },
+    }
+    axios.request(options).then(function (response) {
+      console.log(response);
+      setPoliceNumb(response.data.data.policeNumb);
+      setSuspectNumb(response.data.data.suspectNumb);
+      setNewSuspectNumb(response.data.data.newSuspectNumb);
+      setTodayPushAddressNumb(response.data.data.todayPushAddressNumb);
+    }).catch(function (error) {
+      console.error(error);
+    });
+  },[])
+  
+
   return (
     <>
       {/* NOTE: comment in this code when you get to this point in the course */}
 
-      <Card title="警察数量" value={totalPaidInvoices} type="collected" />
-      <Card title="嫌疑人数量" value={totalPendingInvoices} type="pending" />
-      <Card title="今日新增嫌疑人" value={numberOfInvoices} type="invoices" />
+      <Card title="警察数量" value={policeNumb} type="collected" />
+      <Card title="嫌疑人数量" value={suspectNumb} type="pending" />
+      <Card title="今日新增嫌疑人" value={newSuspectNumb} type="invoices" />
       <Card
         title="今日推送数量"
-        value={numberOfCustomers}
+        value={todayPushAddressNumb}
         type="customers"
       />
     </>

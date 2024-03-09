@@ -7,10 +7,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
-import { login } from '../lib/login';
 import { useState,createContext,useContext, useEffect, use } from 'react';
 import Link from '@/node_modules/next/link';
-import { UserContext, UserData, useUser } from '../lib/user';
 import { useRouter } from '@/node_modules/next/navigation';
 import { stringify } from 'querystring';
 import axios from 'axios';
@@ -22,7 +20,6 @@ const HandleChangeContext = createContext({});
 
 
 export default function LoginForm() {
-  const context = useContext(UserContext);
   const router = useRouter();
 
    
@@ -37,15 +34,7 @@ export default function LoginForm() {
         'Authorization':`Basic ${btoaStr}`
       },
     }
-    const data =await axios(options);
-    if(data.status==401){
-      throw new Error("请登录");
-    }
-    context?.setUserInfo({
-      name:data.data.name,
-      password:password,
-      username:username
-    });
+    const data =await axios(options);   
      router.push('/dashboard');
   }
 
